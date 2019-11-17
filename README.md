@@ -6,5 +6,5 @@ Fall 2019
 Proffesor Bradley Hayes 
 
 Group Collaborators:
-Jordan Smart - https://github.com/jordansmart
+Jordan Smart - https://github.com/jordansmart  
 Casey Tran - https://github.com/casey-tran
