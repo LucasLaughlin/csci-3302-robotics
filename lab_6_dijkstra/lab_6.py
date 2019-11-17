@@ -36,7 +36,6 @@ def create_test_map(map_array):
             map_matrix[random_cell] = 1
   
   g_WORLD_MAP = map_matrix
-  print(map_matrix)
   return map_matrix
 
 def vertex_index_to_ij(vertex_index):
