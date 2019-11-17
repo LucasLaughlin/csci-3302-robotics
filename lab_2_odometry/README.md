@@ -1,1 +1,1 @@
-Sparki follows a black line
+Sparki follows the black line map inlcuded in the sparki kit.
