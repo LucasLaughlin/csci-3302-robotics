@@ -1,15 +1,15 @@
-#Final Project#
+# Final Project #
 Abstract
 	We are going to create a moving and interactive display through the use of a robot arm and projection mapping. The robot arm will hold a blank white sheet that will move around and the projector will map to that screen as it moves. We would like the screen to recognize when someone is looking at it and then face that person. 
 
 
 
-###Equipment###
+### Equipment ###
 * USB Camera
 * Depth Camera
 * Rethink Robotics Sawyer Arm
 
-###Deliverables and Implementation Plan###
+### Deliverables and Implementation Plan ###
 1. Create Face tracking Vision System - Lead: 	Lucas Laughlin Deadline: 11/18/19	
     * Install OpenCV Python package and verify it works with camera.
     * Install dlib library and verify it works by capturing facial landmarks.
