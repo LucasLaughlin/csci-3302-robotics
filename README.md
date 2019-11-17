@@ -10,7 +10,7 @@ Jordan Smart - https://github.com/jordansmart
 Casey Tran - https://github.com/casey-tran
 
 Lab 1-3  
-* use arcrobotics sparki - http://arcbotics.com/products/sparki/  
+* use arcbotics sparki - http://arcbotics.com/products/sparki/  
 
   
 Lab 4  
