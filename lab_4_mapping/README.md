@@ -40,6 +40,6 @@ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
  ```
  _ represents and empty grid spot  
- X is an object
+ X is an object  
  R is the robots position
 
