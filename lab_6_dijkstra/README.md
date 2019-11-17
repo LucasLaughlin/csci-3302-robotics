@@ -7,10 +7,15 @@ python lab_6.py
 
 Output is displayed as follow:
 ```
+starting vertex:  (0, 0)
+destination vertex:  (3, 3)
  .  . [ ] . 
- . [ ] .  . 
- .  .  . [ ]
- .  .  . [ ]
+ .  . [ ] . 
+ .  . [ ] . 
+ .  .  .  . 
+
+
+path:  0 -> 1 -> 2 -> 3 -> 7 -> 11 -> 15
  ```
  . represents and empty grid spot  
  [ ] is an obstacle  
