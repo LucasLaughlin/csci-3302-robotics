@@ -1,5 +1,5 @@
 # CSCI-3302-Robotics
-All classwork from CSCI 3302: Intro to Robotics at University of Colorado, Boulder
+Classwork from CSCI 3302: Intro to Robotics at University of Colorado, Boulder
 
 Fall 2019
 
