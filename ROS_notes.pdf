@@ -1,0 +1,211 @@
+ROS NOTES
+
+USEFUL COMMANDS
+	rospack
+	roscd
+	rosls
+	roscp
+	rosmsg
+	rossrv
+	catkin_make
+
+	source devel/setup.bash							must run in every new window to access ros commands; run after catkin_make to fix some issues
+
+	roscd [locationname[/subdir]]						navigate to directory [locationname] or a subdirectory of 											a package [/subdir] 
+		ex: roscd roscpp/cmake - navigates to roscpp/cmake
+	rosls [locationname[/subdir]]						ls by directory name
+	roscp [package_name] [file_to_copy_path] [copy_path]			copy files form one package to another
+
+	rospack find [package_name]						return path to package
+	rospack depends1 [package_name]						return first order dependencies
+	rospack depends [package_name] 						return all dependencies, indirect dependencies
+	
+	
+	catkin_create_pkg <package_name> [depend1] [depend2] [depend3]		create catkin package. 
+	catkin_make								build all packages in src folder. NOTE: use in catkin workspace
+
+	roscore 								run first; starts master, /rosout, and parameter server
+	rosnode list								lists current running ros nodes
+	rosnode info <node_name>						information about ros node
+	rosnode ping <node_name>						ping rosnode
+	rosnode cleanup 							clean up node list
+	rosrun [package_name] [node_name]					run node from packages w/o knowing package path
+		rosrun [package_name] [node_name] __name:=my_turtle		run node as a new name
+
+	rosrun rqt_graph rqt_graph						show a graph of rosnodes running + topics/publishing/subscription
+	rosrun rqt_logger_level rqt_logger_level				logger level options
+	rosrun rqt_console rqt_console						access warnings/errors/debug console
+
+	rostopic -h								helps for rostopic
+	rostopic list -v							list all topics
+	rostopic echo [topic]							lists data published to topic
+	rostopic type [topic]							show messga e type being published to a topic
+		rosmsg show [message_type] 					details about message type
+	rostopic pub [topic] [msg_type] [args]					publish data to a topic
+		rostopic pub -1 /turtle1/cmd_vel geometry_msgs/Twist -- '[2.0, 0.0, 0.0]' '[0.0, 0.0, 1.8]'
+			-1 : publish 1 msg then exit
+			-- : following arguments preceded by - aren't optional(e.g. negative #s)
+		rostopic pub /turtle1/cmd_vel geometry_msgs/Twist -r 1 -- '[2.0, 0.0, 0.0]' '[0.0, 0.0, -1.8]'
+			-r 1: conitnually publish at 1 HZ frequency
+
+	rosservice list								list ros services
+	rosservice type [service]						list type of service
+	rosservice call [service] [args]					call a service 
+	
+
+	rosparam list								list ros parameters
+	rosparam set [param_name]						set ros parameter
+		follow with rosservice call /clear to take effect
+	rosparam get [param_name]						get ros parameter
+		rosparam get / 							shows all parameter values
+
+	roslaunch [package] [filename.launch]					launch according to launch file - http://wiki.ros.org/ROS/Tutorials/UsingRqtconsoleRoslaunch
+
+	rosed [package_name] [filename]						vim on fil ew/out
+
+	rosmsg show [message type]						show message data types and names
+	rossrv
+
+	rosbag record -a							record all published messages 
+	rosbag info <your bagfile>						info on recorded message
+	rosbag play <your bagfile>						replay recorded messages
+	rosbag record -O subset [topic 1] [topic 2]				record to subset.bag only topics 1 and 2
+
+	roswtf									
+
+
+CATKIN PACKAGES
+	1. catkin compliant package.xml file provides meta information
+	2. CMakeLists.txt which uses catkin
+	3. Own folder, unshared with other packages
+
+	e.g. - my_package/
+  		 CMakeLists.txt
+  		 package.xml
+
+
+
+msg FILES
+	- http://wiki.ros.org/ROS/Tutorials/CreatingMsgAndSrv
+	- describe fields of a ros message
+	- stored in msg directory of package
+	- header is special data type containing a timstamp and coordinate frame info
+	e.g. - 
+		Header header
+  		string child_frame_id
+  		geometry_msgs/PoseWithCovariance pose
+  		geometry_msgs/TwistWithCovariance twist
+		
+srv FILES
+	- http://wiki.ros.org/ROS/Tutorials/CreatingMsgAndSrv
+	- request and repsonse of a service
+		* seperated by ---
+	- stored in srv firectory of package
+	e.g. - 
+		int64 A
+		int64 B
+		---
+		int64 Sum
+
+ROS NODES
+	- http://wiki.ros.org/ROS/Tutorials/WritingPublisherSubscriber%28python%29
+
+Publisher code:
+	
+#!/usr/bin/env python				# ensures it executes as python script
+import rospy					# import rospy for use
+from std_msgs.msg import String			# reuse std_msgs/String for publishing
+
+def talker():
+    pub = rospy.Publisher('chatter', String, queue_size=10)		# declares node is publishing to topic 'chatter', message type String, limits message que to 10 if subscriber can't keep up
+    rospy.init_node('talker', anonymous=True)				# give node a name (talker), anonymous=TRUE gives node numbers at end of name to mak eit unique 
+    rate = rospy.Rate(10) # 10hz					# loop at 10 times a second
+    while not rospy.is_shutdown():					# check if porgram should exit, otherwise do work: 
+        hello_str = "hello world %s" % rospy.get_time()			
+        rospy.loginfo(hello_str)					# prints string, written to log file, written to rosout
+        pub.publish(hello_str)						# publish hello_str to pub
+        rate.sleep()							# delays loop to maintain 10 hz rate declared above
+
+if __name__ == '__main__':
+    try:
+        talker()
+    except rospy.ROSInterruptException:					# prevents continually executing after sleep() 
+        pass
+
+Subscriber code:
+
+#!/usr/bin/env python
+import rospy
+from std_msgs.msg import String
+
+def callback(data):
+    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
+    
+def listener():
+
+    # In ROS, nodes are uniquely named. If two nodes with the same
+    # name are launched, the previous one is kicked off. The
+    # anonymous=True flag means that rospy will choose a unique
+    # name for our 'listener' node so that multiple listeners can
+    # run simultaneously.
+    rospy.init_node('listener', anonymous=True)
+
+    rospy.Subscriber("chatter", String, callback)				# subscribes to chatter; when new message recieved, callback function executes
+
+    # spin() simply keeps python from exiting until this node is stopped	
+    rospy.spin()
+
+if __name__ == '__main__':
+    listener()
+
+
+Service code:
+
+#!/usr/bin/env python								
+
+from beginner_tutorials.srv import AddTwoInts,AddTwoIntsResponse		# import the service type
+import rospy
+
+def handle_add_two_ints(req):
+    print "Returning [%s + %s = %s]"%(req.a, req.b, (req.a + req.b))
+    return AddTwoIntsResponse(req.a + req.b)
+
+def add_two_ints_server():
+    rospy.init_node('add_two_ints_server')
+    s = rospy.Service('add_two_ints', AddTwoInts, handle_add_two_ints)		# declares service names add_two_ints of type AddTwo_ints and passes handling to another function
+    print "Ready to add two ints."
+    rospy.spin()
+
+if __name__ == "__main__":
+    add_two_ints_server()
+
+
+client code :
+
+#!/usr/bin/env python
+
+import sys
+import rospy
+from beginner_tutorials.srv import *
+
+def add_two_ints_client(x, y):
+    rospy.wait_for_service('add_two_ints')				# blocks until add two ints is available
+    try:
+        add_two_ints = rospy.ServiceProxy('add_two_ints', AddTwoInts)	# create handle for calling service; because we declared type, it generates AddTwoIntsRequest object and returns AddTwoIntsReponse object
+        resp1 = add_two_ints(x, y)					# call service
+        return resp1.sum
+    except rospy.ServiceException, e:
+        print "Service call failed: %s"%e
+
+def usage():
+    return "%s [x y]"%sys.argv[0]
+
+if __name__ == "__main__":
+    if len(sys.argv) == 3:
+        x = int(sys.argv[1])
+        y = int(sys.argv[2])
+    else:
+        print usage()
+        sys.exit(1)
+    print "Requesting %s+%s"%(x, y)
+    print "%s + %s = %s"%(x, y, add_two_ints_client(x, y))
