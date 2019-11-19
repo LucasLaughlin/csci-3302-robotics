@@ -53,37 +53,42 @@ class KMeansClassifier(object):
 
     self._cluster_centers = [self._data[i] for i in random.sample(xrange(0,len(self._data)), k)]
 
-    counter=0
-    # TODO Follow convergence procedure to find final locations for each center
     while True:
       clusters=[]
       clusters = list(self._cluster_centers)
-      print(len(self._data))
+      for i in xrange(len(clusters)):
+        clusters[i] = [clusters[i]]
+      print(clusters)
+      # Iterate through each datapoint in self._data and figure out which cluster it belongs to
       for p in self._data:
-        counter+=1
-        print(counter)
         clusters[self.classify(p)].append(p)
-      # TODO: Iterate through each datapoint in self._data and figure out which cluster it belongs to
-      # HINT: Use self.classify(p) for each datapoint p
-
       
-      # TODO: Figure out new positions for each cluster center (should be the average position of all its points)
-      new_cluster_centers =[[np.average(c, axis=0)] for c in clusters]
-      print(new-cluster_centers)
-      # TODO: Check to see how much the cluster centers have moved (for the stopping condition)
-      #point_shift_sum = sum(i in range(self._cluster_centers), key= lambda c : distance.euclidian(self._cluster_centers[i], clusters[i]))
-      point_shift_sum = sum(i in range(self._cluster_centers), key= lambda c : math.sqrt(sum([(a-b)**2 for a, b in zip(self._cluster_centers[i], clusters[i])])))
-      self._cluster_centers=new_cluster_centers
+      
+      print(clusters)
+      print("\n")
+      # Figure out new positions for each cluster center (should be the average position of all its points)
+      new_cluster_centers =[np.mean(c, axis=0) for c in clusters]
+      print(new_cluster_centers)
+      # Check to see how much the cluster centers have moved (for the stopping condition)
+      point_shift_sum = 0
+      for i in range(len(self._cluster_centers)):   
+        point_shift_sum += math.sqrt(sum([(a-b)**2 for a, b in zip(self._cluster_centers[i], new_cluster_centers[i])]))
+
+      self._cluster_centers=list(new_cluster_centers)
       if point_shift_sum<1: # TODO: If the centers have moved less than some predefined threshold (you choose!) then exit the loop
         break      
-      counter+=1
     # TODO Add each of the 'k' final cluster_centers to the model (self._cluster_centers)
 
   def classify(self,p):
     # Given a data point p, figure out which cluster it belongs to and return that cluster's ID (its index in self._cluster_centers)
-    #closest_cluster_index = self._cluster_centers.index(min(self._cluster_centers, key= lambda c : distance.euclidian(c, p)))
     #print(p)
-    closest_cluster_index = self._cluster_centers.index(min(self._cluster_centers, key= lambda c : math.sqrt(sum([(a-b)**2 for a, b in zip(c, p)]))))
+    dist=[]
+    for c in self._cluster_centers:
+      #print(c)
+      dist.append(math.sqrt(sum([(a-b)**2 for a, b in zip(c, p)])))
+    #print(dist)
+    closest_cluster_index = dist.index(min(dist))
+    #print(closest_cluster_index)
     return closest_cluster_index
 
 class KNNClassifier(object):
