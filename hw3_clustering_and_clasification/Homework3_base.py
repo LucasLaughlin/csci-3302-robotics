@@ -63,32 +63,24 @@ class KMeansClassifier(object):
       for p in self._data:
         clusters[self.classify(p)].append(p)
       
-      
-      print(clusters)
-      print("\n")
       # Figure out new positions for each cluster center (should be the average position of all its points)
       new_cluster_centers =[np.mean(c, axis=0) for c in clusters]
-      print(new_cluster_centers)
+
       # Check to see how much the cluster centers have moved (for the stopping condition)
       point_shift_sum = 0
       for i in range(len(self._cluster_centers)):   
         point_shift_sum += math.sqrt(sum([(a-b)**2 for a, b in zip(self._cluster_centers[i], new_cluster_centers[i])]))
 
       self._cluster_centers=list(new_cluster_centers)
-      if point_shift_sum<1: # TODO: If the centers have moved less than some predefined threshold (you choose!) then exit the loop
+      if point_shift_sum<1: # If the centers have moved less than some predefined threshold (you choose!) then exit the loop
         break      
-    # TODO Add each of the 'k' final cluster_centers to the model (self._cluster_centers)
 
   def classify(self,p):
     # Given a data point p, figure out which cluster it belongs to and return that cluster's ID (its index in self._cluster_centers)
-    #print(p)
     dist=[]
     for c in self._cluster_centers:
-      #print(c)
       dist.append(math.sqrt(sum([(a-b)**2 for a, b in zip(c, p)])))
-    #print(dist)
     closest_cluster_index = dist.index(min(dist))
-    #print(closest_cluster_index)
     return closest_cluster_index
 
 class KNNClassifier(object):
@@ -107,16 +99,25 @@ class KNNClassifier(object):
   def classify_datapoint(self, data_point, k):
     label_counts = {} # Dictionary mapping "label" => vote count
     best_label = None
+    dist=[[0, self.euclidian_distance(self._data[0][0], data_point)]]
+    for index, data in enumerate(self._data):
+      dist.append([index, self.euclidian_distance(data[0], data_point)])
 
-    # Perform k_nearest_neighbor classification, setting best_label to the majority-vote label for k-nearest points
-    #TODO: Find the k nearest points in self._data to data_point
-    #TODO: Populate label_counts with the number of votes each label got from the k nearest points
-    #TODO: Make sure to scale the weight of the vote each point gets by how far away it is from data_point
-    #      Since you're just taking the max at the end of the algorithm, these do not need to be normalized in any way
+    sorted_dist = sorted(dist, key = lambda x: x[1])
+    alpha = 0.79
+    for i in range(k):
+      label = self._data[sorted_dist[i][0]][1]
+      if label in label_counts:
+        label_counts[label]+=math.exp(alpha*sorted_dist[i][1])#* (k-i)#/(sorted_dist[i][1])
+      else:
+        label_counts[label]=math.exp(alpha*sorted_dist[i][1])#*(k-i)#(sorted_dist[i][1])
 
-    
+    best_label= max(label_counts, key=label_counts.get)
     return best_label
 
+  def euclidian_distance(self, point1, point2):
+    euc_dist = math.sqrt(sum([(a-b)**2 for a, b in zip(point1, point2)]))
+    return euc_dist
 
 
 def print_and_save_cluster_centers(classifier, filename):
@@ -177,20 +178,17 @@ def main():
 
   # Create and test K-nearest neighbor classifier
   kNN_classifier = KNNClassifier()
-  k = 2
+  k=11 
 
   correct_classifications = 0
   # Perform leave-one-out cross validation (LOOCV) to evaluate KNN performance
   for holdout_idx in range(len(data)):
     # Reset classifier
     kNN_classifier.clear_data()
-
     for idx in range(len(data)):
       if idx == holdout_idx: continue # Skip held-out data point being classified
-
       # Add (data point, label) tuples to KNNClassifier
       kNN_classifier.add_labeled_datapoint(data[idx], labels[idx])
-
     guess = kNN_classifier.classify_datapoint(data[holdout_idx], k) # Perform kNN classification
     if guess == labels[holdout_idx]: 
       correct_classifications += 1.0
@@ -198,7 +196,7 @@ def main():
   print("kNN classifier for k=%d" % k)
   print("Accuracy: %g" % (correct_classifications / len(data)))
   print('\n'*2)
-
+  
   visualize_data(data, 'hw3_kmeans_' + LAST_NAME + '.pkl')
 
 

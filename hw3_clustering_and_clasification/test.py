@@ -13,4 +13,8 @@ print(np.average(X, axis=0))
 x=[(2,3), (4, 5)]
 y=[(2,2), (3,4)]
 
-print(x[0]-y[0])
+
+for index, ele in enumerate(X):
+    print ele, index
+
+    print(range(24))
