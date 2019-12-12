@@ -15,25 +15,10 @@ from std_msgs.msg import Float32MultiArray, Empty, String, Int16
 
 def dist(x1,y1,x2,y2):
 	return (math.sqrt((x2-x1)**2+(y2-y1)**2))
-# construct the argument parser and parse the arguments
-#ap = argparse.ArgumentParser()
-#ap.add_argument("-p", "--shape-predictor", required=True,
-	#help="path to facial landmark predictor")
-#ap.add_argument("-i", "--image", required=True,
-	#help="path to input image")
-#args = vars(ap.parse_args())
 
-# initialize dlib's face detector (HOG-based) and then create
-# the facial landmark predictor
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
-# load the input image, resize it, and convert it to grayscale
-#image = cv2.imread(args["image"])
-#image = imutils.resize(image, width=500)
-#gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-# detect faces in the grayscale image
 rospy.init_node('project', anonymous=TRUE)
 
 publisher_camera = rospy.Publisher('/project/camera', Float32MultiArray)
@@ -58,8 +43,7 @@ while 1:
 	w=image.shape[0]
 	
 	for (i, rect) in enumerate(rects):
-		# determine the facial landmarks for the face region, then
-		# convert the landmark (x, y)-coordinates to a NumPy array
+		
 		shape = predictor(gray, rect)
 		shape = face_utils.shape_to_np(shape)
 		
@@ -67,9 +51,8 @@ while 1:
 		#print(shape)
 		# loop over the face parts individually
 		for (name, (i, j)) in face_utils.FACIAL_LANDMARKS_IDXS.items():
-			# clone the original image so we can draw on it, then
-			# display the name of the face part on the image
-			#clone = image.copy()
+			
+			
 			#cv2.putText(image, name, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
 			# loop over the subset of facial landmarks, drawing the
@@ -100,18 +83,9 @@ while 1:
 				leyelh=dist(shape[i:j][1][0],shape[i:j][1][1],shape[i:j][5][0],shape[i:j][5][1])
 				leyerh=dist(shape[i:j][2][0],shape[i:j][2][1],shape[i:j][4][0],shape[i:j][4][1])
 
-			# extract the ROI of the face region as a separate image
-			#(x, y, w, h) = cv2.boundingRect(np.array([shape[i:j]]))
-			#roi = image[y:y + h, x:x + w]
-			#roi = imutils.resize(roi, width=250, inter=cv2.INTER_CUBIC)
 
-			# show the particular face part
-			#cv2.imshow("ROI", roi)
-			#cv2.imshow("Image", image)
-			#cv2.waitKey(0)
 
-		# visualize all facial landmarks with a transparent overlay
-		#output = face_utils.visualize_facial_landmarks(image, shape)
+		
 	#print(l,r)
 	#print(r[0],r[1])
 	if ((r[0]!=0) & (r[1]!=0) & (l[0]!=0) & (l[1]!=0) ):
