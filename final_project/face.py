@@ -35,9 +35,9 @@ predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 #gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 # detect faces in the grayscale image
-#rospy.init_node('project', anonymous=True)
+rospy.init_node('project', anonymous=True)
 
-#publisher_camera = rospy.Publisher('/project/camera', Float32MultiArray)
+publisher_camera = rospy.Publisher('/project/camera', Float32MultiArray)
 
 #trying to get fame with 10% so we need to set boarders 5%  to the center. can change if needed
 
@@ -137,6 +137,7 @@ while 1:
 		print("good", center)
 		msg = Float32MultiArray()
 		msg.data=[0.0,0.0]
+		print (center)
 		if (bottom > center[1]):
 			if (left> center[0]):
 				print("move up +right")
@@ -161,7 +162,7 @@ while 1:
 		else:
 			msg.data=[0.0,0.0]
 		
-		#publisher_camera.publish(msg)
+		publisher_camera.publish(msg)
 	cv2.imshow("Image", image)
 	#cv2.waitKey(0)
 	k = cv2.waitKey(30) & 0xff
