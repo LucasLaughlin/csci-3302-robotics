@@ -10,6 +10,7 @@ import random
 import copy
 import cv2 
 import numpy as np 
+from freenect2 import Device, FrameType
 
 # List of color ranges to look for... but stored in BGR order because that's how OpenCV does it
 # Example: color_ranges = [((0,0,100), (0,0,255)), ((0,100,0), (0,255,0))]
