@@ -1,7 +1,3 @@
-# CSCI 3302: Homework 4 -- Object Detection via background subtraction and color filtering
-# Using Color Filtering with Blob Detection to find objects using a webcam
-# Please do not collaborate on this assignment -- your code must be your own!
-
 from std_msgs.msg import Float32MultiArray, Empty, String, Int16
 import numpy as np
 import cv2
