@@ -71,15 +71,7 @@ def init():
     #rospy.init_node('cairo_sawyer_ik_example')
     g_limb = intera_interface.Limb('right')
 
-    # This quaternion will have the hand face straight down (ideal for picking tasks)
-    """ g_orientation_hand_down = Quaternion()
-    g_orientation_hand_down.x = 0.704238785359
-    g_orientation_hand_down.y =0.709956638597
-    g_orientation_hand_down.z = -0.00229009932359 
-    g_orientation_hand_down.w = 0.00201493272073 """
-   
-   # Ros quaternion info - http://wiki.ros.org/tf2/Tutorials/Quaternions
-   #FIRST ROTATION
+    
     eluer= (0,0,0)
     q_orig = quaternion_from_euler(eluer[0],eluer[1],eluer[2]) # Set origin
     q_rot1 = quaternion_from_euler(0, pi/2, 0) # Rotate 90 degrees around y axis
@@ -87,12 +79,7 @@ def init():
     quat_tf = quaternion_multiply(q_rot2, quaternion_multiply(q_rot1, q_orig)) # multiply rotations in order
     g_orientation = Quaternion(quat_tf[0], quat_tf[1], quat_tf[2], quat_tf[3]) # Create Quaternion object ROS can read
 
-    #SECOND ROTATION
-    #q_rot3 = quaternion_from_euler(0, 0,0.3) # rotate 0.3 around z axis
-    #quat_tf2 = quaternion_multiply(q_rot3, quat_tf) # Multiply rotation times position quat_tf to get quat_tf2
-    #g_orientation2 = Quaternion(quat_tf2[0], quat_tf2[1], quat_tf2[2], quat_tf2[3]) # Create Quaternion object ROS ccan read
-
-    # This is the default neutral position for the robot's hand (no guarantee this will move the joints to neutral though)
+    
     g_position_neutral = Point()
     g_position_neutral.x = 0.449559195663
     g_position_neutral.y = 0.16070379419
@@ -118,16 +105,7 @@ def main():
     target_pose.position = copy.deepcopy(g_position_neutral)
     target_pose.orientation = copy.deepcopy(g_orientation)
 
-    #target_pose2 = Pose()
-    #target_pose2.position = copy.deepcopy(g_position_neutral)
-    #target_pose2.orientation = copy.deepcopy(g_orientation2)
-
-    #target_pose.position.x += 0.2 # Add 20cm to the x axis position of the hand
-    #target_pose2.position.x += 0.2
-    #target_pose.position.z += 0.4 # Add 20cm to the x axis position of the hand
-    #target_pose2.position.z += 0.4
-
-    # Call the IK service to solve for joint angles for the desired pose
+    
     target_joint_angles = g_limb.ik_request(target_pose, "right_hand")
     #target_joint_angles2 = g_limb.ik_request(target_pose2, "right_hand")
 
@@ -139,11 +117,7 @@ def main():
     # Set the robot speed (takes a value between 0 and 1)
     g_limb.set_joint_position_speed(0.3)
 
-    # Send the robot arm to the joint angles in target_joint_angles, wait up to 2 seconds to finish
     
-    #g_limb.move_to_joint_positions(target_joint_angles, timeout=2)
-
-    # Find the new coordinates of the hand and the angles the motors are currently at
     new_hand_pose = copy.deepcopy(g_limb._tip_states.states[0].pose)
     new_angles = g_limb.joint_angles()
     rospy.loginfo("New Hand Pose:\n %s" % str(new_hand_pose))
@@ -152,18 +126,7 @@ def main():
     rospy.spin()
 
 
-    #newpos((0,0,0))
-    #newpos((0,0,0.2))# left 
-    #newpos((0,0,-0.2))#right
-    #newpos((0,0.2,0))#down
-    #newpos((0,-0.2,0))# up 
-    #newpos((0,0,0.2))
-    #newpos((0,0,0.2))
-
-    #newpos((0,0,0))
-    #newpos((0,0,0))
-    #newpos((0.2,-0.2,0.2))
-    #newpos((0,0,0))
+    
     
 
         
